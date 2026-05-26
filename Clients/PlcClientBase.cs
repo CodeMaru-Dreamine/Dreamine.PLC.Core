@@ -232,7 +232,7 @@ public abstract class PlcClientBase : IPlcClient
     }
 
     /// <inheritdoc />
-    public async ValueTask DisposeAsync()
+    public virtual async ValueTask DisposeAsync()
     {
         if (_disposed)
         {
