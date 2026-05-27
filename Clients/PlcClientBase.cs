@@ -45,10 +45,10 @@ public abstract class PlcClientBase : IPlcClient
 
                 return result;
             }
-            catch (OperationCanceledException)
+            catch (OperationCanceledException ex)
             {
-                SetState(PlcConnectionState.Disconnected);
-                throw;
+                SetState(PlcConnectionState.Faulted);
+                return PlcResult.Failure(ex.Message);
             }
             catch (Exception ex)
             {
@@ -82,10 +82,10 @@ public abstract class PlcClientBase : IPlcClient
                 SetState(PlcConnectionState.Disconnected);
                 return result;
             }
-            catch (OperationCanceledException)
+            catch (OperationCanceledException ex)
             {
                 SetState(PlcConnectionState.Faulted);
-                throw;
+                return PlcResult.Failure(ex.Message);
             }
             catch (Exception ex)
             {
@@ -118,9 +118,10 @@ public abstract class PlcClientBase : IPlcClient
         {
             return await ReadBitsCoreAsync(address, count, cancellationToken).ConfigureAwait(false);
         }
-        catch (OperationCanceledException)
+        catch (OperationCanceledException ex)
         {
-            throw;
+            SetState(PlcConnectionState.Faulted);
+            return PlcResult<bool[]>.Failure(ex.Message);
         }
         catch (Exception ex)
         {
@@ -152,9 +153,10 @@ public abstract class PlcClientBase : IPlcClient
         {
             return await ReadWordsCoreAsync(address, count, cancellationToken).ConfigureAwait(false);
         }
-        catch (OperationCanceledException)
+        catch (OperationCanceledException ex)
         {
-            throw;
+            SetState(PlcConnectionState.Faulted);
+            return PlcResult<short[]>.Failure(ex.Message);
         }
         catch (Exception ex)
         {
@@ -186,9 +188,10 @@ public abstract class PlcClientBase : IPlcClient
         {
             return await WriteBitsCoreAsync(address, values, cancellationToken).ConfigureAwait(false);
         }
-        catch (OperationCanceledException)
+        catch (OperationCanceledException ex)
         {
-            throw;
+            SetState(PlcConnectionState.Faulted);
+            return PlcResult.Failure(ex.Message);
         }
         catch (Exception ex)
         {
@@ -220,9 +223,10 @@ public abstract class PlcClientBase : IPlcClient
         {
             return await WriteWordsCoreAsync(address, values, cancellationToken).ConfigureAwait(false);
         }
-        catch (OperationCanceledException)
+        catch (OperationCanceledException ex)
         {
-            throw;
+            SetState(PlcConnectionState.Faulted);
+            return PlcResult.Failure(ex.Message);
         }
         catch (Exception ex)
         {
