@@ -85,7 +85,7 @@ public sealed class PlcSimulatorTcpClient : PlcClientBase
         await SendCommandAsync($"{PlcSimulatorProtocol.WriteBits} {address} {valuesText}", cancellationToken).ConfigureAwait(false);
         return PlcResult.Success();
     }
-    
+
     /// <inheritdoc />
     protected override async Task<PlcResult> WriteWordsCoreAsync(PlcAddress address, IReadOnlyList<short> values, CancellationToken cancellationToken)
     {

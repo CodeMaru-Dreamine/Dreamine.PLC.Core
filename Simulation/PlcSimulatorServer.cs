@@ -1,4 +1,4 @@
-using System.Net;
+﻿using System.Net;
 using System.Net.Sockets;
 using Dreamine.PLC.Core.Devices;
 using Dreamine.PLC.Core.Memory;
@@ -252,7 +252,7 @@ public sealed class PlcSimulatorServer : IAsyncDisposable
 
     private void ApplyAutoWordResponse(Abstractions.Devices.PlcAddress writtenAddress, IReadOnlyList<short> values)
     {
-        if (!_options.EnableAutoWordResponse || values.Count == 0)
+        if (!_options.EnableAutoWordResponse || values.Count != 1)
         {
             return;
         }
@@ -270,7 +270,14 @@ public sealed class PlcSimulatorServer : IAsyncDisposable
             return;
         }
 
-        var responseValue = checked((short)(values[0] + _options.AutoResponseIncrement));
+        var rawResponseValue = values[0] + _options.AutoResponseIncrement;
+        if (rawResponseValue is < short.MinValue or > short.MaxValue)
+        {
+            StatusChanged?.Invoke(this, $"Auto response skipped: value overflow. {_options.AutoResponseAddress}={rawResponseValue}");
+            return;
+        }
+
+        var responseValue = (short)rawResponseValue;
         _memory.WriteWords(responseResult.Value, [responseValue]);
         StatusChanged?.Invoke(this, $"Auto response: {_options.AutoResponseAddress}={responseValue}");
     }
