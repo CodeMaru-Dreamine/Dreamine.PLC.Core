@@ -1,5 +1,7 @@
 # Dreamine.PLC.Core
 
+[Korean documentation](./README_KO.md)
+
 Core runtime utilities for Dreamine PLC communication.
 
 This package provides vendor-neutral runtime components such as in-memory PLC simulation, common address parsing support, simulator server/client infrastructure, and shared logic used by protocol adapters and WPF diagnostics.

@@ -1,5 +1,7 @@
 # Dreamine.PLC.Core
 
+[English documentation](./README.md)
+
 Dreamine PLC 통신을 위한 공통 Runtime 패키지입니다.
 
 이 패키지는 InMemory PLC 시뮬레이션, 공통 주소 처리 지원, Simulator Server/Client 기반 구조, 프로토콜 어댑터와 WPF 진단 UI에서 사용하는 공통 Runtime 로직을 제공합니다.
