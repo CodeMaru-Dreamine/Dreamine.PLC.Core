@@ -13,7 +13,8 @@ namespace Dreamine.PLC.Core.Clients;
 public abstract class PlcClientBase : IPlcClient
 {
     private readonly AsyncLock _syncLock = new();
-    private bool _disposed;
+    private volatile bool _disposed;
+    private int _disposeGuard; // 0=alive, 1=disposing or disposed
 
     /// <inheritdoc />
     public PlcConnectionState State { get; private set; } = PlcConnectionState.Disconnected;
@@ -63,12 +64,7 @@ public abstract class PlcClientBase : IPlcClient
     {
         using (await _syncLock.LockAsync(cancellationToken).ConfigureAwait(false))
         {
-            if (_disposed)
-            {
-                return PlcResult.Success();
-            }
-
-            if (State == PlcConnectionState.Disconnected)
+            if (_disposed || State == PlcConnectionState.Disconnected)
             {
                 return PlcResult.Success();
             }
@@ -235,13 +231,40 @@ public abstract class PlcClientBase : IPlcClient
     /// <inheritdoc />
     public virtual async ValueTask DisposeAsync()
     {
-        if (_disposed)
+        if (Interlocked.CompareExchange(ref _disposeGuard, 1, 0) != 0)
         {
             return;
         }
 
-        await DisconnectAsync().ConfigureAwait(false);
+        // Set _disposed before disconnecting so ThrowIfDisposed blocks concurrent callers immediately.
+        // DisconnectAsync checks _disposed and would short-circuit, so we disconnect directly here.
         _disposed = true;
+
+        try
+        {
+            using (await _syncLock.LockAsync(CancellationToken.None).ConfigureAwait(false))
+            {
+                if (State is not (PlcConnectionState.Disconnected or PlcConnectionState.Disconnecting))
+                {
+                    SetState(PlcConnectionState.Disconnecting);
+
+                    try
+                    {
+                        await DisconnectCoreAsync(CancellationToken.None).ConfigureAwait(false);
+                    }
+                    catch
+                    {
+                        // Ignore disconnect errors during disposal.
+                    }
+
+                    SetState(PlcConnectionState.Disconnected);
+                }
+            }
+        }
+        catch
+        {
+            // Ignore lock acquisition errors during disposal.
+        }
 
         GC.SuppressFinalize(this);
     }
