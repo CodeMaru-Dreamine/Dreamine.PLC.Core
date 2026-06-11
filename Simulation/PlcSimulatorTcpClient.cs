@@ -6,7 +6,7 @@ using Dreamine.PLC.Core.Clients;
 namespace Dreamine.PLC.Core.Simulation;
 
 /// <summary>
-/// \brief Provides an <see cref="Abstractions.Clients.IPlcClient"/> implementation for the Dreamine TCP PLC simulator protocol.
+/// Provides an <see cref="Abstractions.Clients.IPlcClient"/> implementation for the Dreamine TCP PLC simulator protocol.
 /// </summary>
 public sealed class PlcSimulatorTcpClient : PlcClientBase
 {
@@ -16,7 +16,7 @@ public sealed class PlcSimulatorTcpClient : PlcClientBase
     private StreamWriter? _writer;
 
     /// <summary>
-    /// \brief Initializes a new instance of the <see cref="PlcSimulatorTcpClient"/> class.
+    /// Initializes a new instance of the <see cref="PlcSimulatorTcpClient"/> class.
     /// </summary>
     /// <param name="options">The simulator client options.</param>
     public PlcSimulatorTcpClient(PlcSimulatorClientOptions options)

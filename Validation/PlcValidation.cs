@@ -40,7 +40,8 @@ public static class PlcValidation
             return PlcResult.Failure("The PLC address offset must be greater than or equal to zero.");
         }
 
-        if (address.BitOffset is < 0 or > 15)
+        if (address.BitOffset.HasValue &&
+            address.BitOffset is < 0 or > 15)
         {
             return PlcResult.Failure("The PLC bit offset must be between 0 and 15.");
         }

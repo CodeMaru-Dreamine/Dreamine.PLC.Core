@@ -1,4 +1,4 @@
-﻿using System.Net;
+using System.Net;
 using System.Net.Sockets;
 using Dreamine.PLC.Core.Devices;
 using Dreamine.PLC.Core.Memory;
@@ -6,7 +6,7 @@ using Dreamine.PLC.Core.Memory;
 namespace Dreamine.PLC.Core.Simulation;
 
 /// <summary>
-/// \brief Provides a lightweight TCP PLC simulator server for samples and cross-PC tests.
+/// Provides a lightweight TCP PLC simulator server for samples and cross-PC tests.
 /// </summary>
 public sealed class PlcSimulatorServer : IAsyncDisposable
 {
@@ -20,7 +20,7 @@ public sealed class PlcSimulatorServer : IAsyncDisposable
     private Task? _acceptTask;
 
     /// <summary>
-    /// \brief Initializes a new instance of the <see cref="PlcSimulatorServer"/> class.
+    /// Initializes a new instance of the <see cref="PlcSimulatorServer"/> class.
     /// </summary>
     /// <param name="options">The server options.</param>
     public PlcSimulatorServer(PlcSimulatorServerOptions options)
@@ -29,7 +29,7 @@ public sealed class PlcSimulatorServer : IAsyncDisposable
     }
 
     /// <summary>
-    /// \brief Initializes a new instance of the <see cref="PlcSimulatorServer"/> class.
+    /// Initializes a new instance of the <see cref="PlcSimulatorServer"/> class.
     /// </summary>
     /// <param name="options">The server options.</param>
     /// <param name="memory">The shared in-memory PLC memory.</param>
@@ -40,17 +40,17 @@ public sealed class PlcSimulatorServer : IAsyncDisposable
     }
 
     /// <summary>
-    /// \brief Occurs when the server status changes.
+    /// Occurs when the server status changes.
     /// </summary>
     public event EventHandler<string>? StatusChanged;
 
     /// <summary>
-    /// \brief Gets whether the simulator server is running.
+    /// Gets whether the simulator server is running.
     /// </summary>
     public bool IsRunning => _listener is not null;
 
     /// <summary>
-    /// \brief Starts the TCP simulator server.
+    /// Starts the TCP simulator server.
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task that represents the asynchronous operation.</returns>
@@ -71,7 +71,7 @@ public sealed class PlcSimulatorServer : IAsyncDisposable
     }
 
     /// <summary>
-    /// \brief Stops the TCP simulator server.
+    /// Stops the TCP simulator server.
     /// </summary>
     /// <returns>A task that represents the asynchronous operation.</returns>
     public async Task StopAsync()
@@ -147,6 +147,7 @@ public sealed class PlcSimulatorServer : IAsyncDisposable
             var task = Task.Run(() => HandleClientAsync(client, cancellationToken), CancellationToken.None);
             lock (_syncRoot)
             {
+                _clientTasks.RemoveAll(static item => item.IsCompleted);
                 _clientTasks.Add(task);
             }
         }
@@ -214,7 +215,11 @@ public sealed class PlcSimulatorServer : IAsyncDisposable
 
     private string ExecuteReadBits(Abstractions.Devices.PlcAddress address, string argument)
     {
-        var count = int.Parse(argument);
+        if (!TryParseCount(argument, out var count, out var error))
+        {
+            return PlcSimulatorProtocol.Error(error);
+        }
+
         var result = _memory.ReadBits(address, count);
         return result.IsSuccess && result.Value is not null
             ? PlcSimulatorProtocol.Ok(PlcSimulatorProtocol.FormatBits(result.Value))
@@ -223,11 +228,33 @@ public sealed class PlcSimulatorServer : IAsyncDisposable
 
     private string ExecuteReadWords(Abstractions.Devices.PlcAddress address, string argument)
     {
-        var count = int.Parse(argument);
+        if (!TryParseCount(argument, out var count, out var error))
+        {
+            return PlcSimulatorProtocol.Error(error);
+        }
+
         var result = _memory.ReadWords(address, count);
         return result.IsSuccess && result.Value is not null
             ? PlcSimulatorProtocol.Ok(PlcSimulatorProtocol.FormatWords(result.Value))
             : PlcSimulatorProtocol.Error(result.Message ?? "Read words failed.");
+    }
+
+    private static bool TryParseCount(string text, out int count, out string error)
+    {
+        if (!int.TryParse(text, out count))
+        {
+            error = $"Invalid read count: {text}";
+            return false;
+        }
+
+        if (count <= 0)
+        {
+            error = "Read count must be greater than zero.";
+            return false;
+        }
+
+        error = string.Empty;
+        return true;
     }
 
     private string ExecuteWriteBits(Abstractions.Devices.PlcAddress address, string argument)

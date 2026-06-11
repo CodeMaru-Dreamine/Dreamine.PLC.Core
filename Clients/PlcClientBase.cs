@@ -47,7 +47,7 @@ public abstract class PlcClientBase : IPlcClient
             }
             catch (OperationCanceledException ex)
             {
-                SetState(PlcConnectionState.Faulted);
+                SetState(PlcConnectionState.Disconnected);
                 return PlcResult.Failure(ex.Message);
             }
             catch (Exception ex)
@@ -73,6 +73,7 @@ public abstract class PlcClientBase : IPlcClient
                 return PlcResult.Success();
             }
 
+            var previousState = State;
             SetState(PlcConnectionState.Disconnecting);
 
             try
@@ -84,7 +85,7 @@ public abstract class PlcClientBase : IPlcClient
             }
             catch (OperationCanceledException ex)
             {
-                SetState(PlcConnectionState.Faulted);
+                SetState(previousState);
                 return PlcResult.Failure(ex.Message);
             }
             catch (Exception ex)
@@ -120,7 +121,6 @@ public abstract class PlcClientBase : IPlcClient
         }
         catch (OperationCanceledException ex)
         {
-            SetState(PlcConnectionState.Faulted);
             return PlcResult<bool[]>.Failure(ex.Message);
         }
         catch (Exception ex)
@@ -155,7 +155,6 @@ public abstract class PlcClientBase : IPlcClient
         }
         catch (OperationCanceledException ex)
         {
-            SetState(PlcConnectionState.Faulted);
             return PlcResult<short[]>.Failure(ex.Message);
         }
         catch (Exception ex)
@@ -190,7 +189,6 @@ public abstract class PlcClientBase : IPlcClient
         }
         catch (OperationCanceledException ex)
         {
-            SetState(PlcConnectionState.Faulted);
             return PlcResult.Failure(ex.Message);
         }
         catch (Exception ex)
@@ -225,7 +223,6 @@ public abstract class PlcClientBase : IPlcClient
         }
         catch (OperationCanceledException ex)
         {
-            SetState(PlcConnectionState.Faulted);
             return PlcResult.Failure(ex.Message);
         }
         catch (Exception ex)

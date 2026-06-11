@@ -3,32 +3,32 @@ using System.Globalization;
 namespace Dreamine.PLC.Core.Simulation;
 
 /// <summary>
-/// \brief Provides helpers for the Dreamine PLC simulator line protocol.
+/// Provides helpers for the Dreamine PLC simulator line protocol.
 /// </summary>
 public static class PlcSimulatorProtocol
 {
     /// <summary>
-    /// \brief The read bit command name.
+    /// The read bit command name.
     /// </summary>
     public const string ReadBits = "READ_BITS";
 
     /// <summary>
-    /// \brief The read word command name.
+    /// The read word command name.
     /// </summary>
     public const string ReadWords = "READ_WORDS";
 
     /// <summary>
-    /// \brief The write bit command name.
+    /// The write bit command name.
     /// </summary>
     public const string WriteBits = "WRITE_BITS";
 
     /// <summary>
-    /// \brief The write word command name.
+    /// The write word command name.
     /// </summary>
     public const string WriteWords = "WRITE_WORDS";
 
     /// <summary>
-    /// \brief Builds a successful response line.
+    /// Builds a successful response line.
     /// </summary>
     /// <param name="payload">The response payload.</param>
     /// <returns>The successful response line.</returns>
@@ -38,7 +38,7 @@ public static class PlcSimulatorProtocol
     }
 
     /// <summary>
-    /// \brief Builds a failure response line.
+    /// Builds a failure response line.
     /// </summary>
     /// <param name="message">The failure message.</param>
     /// <returns>The failure response line.</returns>
@@ -48,7 +48,7 @@ public static class PlcSimulatorProtocol
     }
 
     /// <summary>
-    /// \brief Converts bit values to a protocol payload.
+    /// Converts bit values to a protocol payload.
     /// </summary>
     /// <param name="values">The bit values.</param>
     /// <returns>The payload text.</returns>
@@ -58,7 +58,7 @@ public static class PlcSimulatorProtocol
     }
 
     /// <summary>
-    /// \brief Converts word values to a protocol payload.
+    /// Converts word values to a protocol payload.
     /// </summary>
     /// <param name="values">The word values.</param>
     /// <returns>The payload text.</returns>
@@ -68,7 +68,7 @@ public static class PlcSimulatorProtocol
     }
 
     /// <summary>
-    /// \brief Parses bit values from a protocol payload.
+    /// Parses bit values from a protocol payload.
     /// </summary>
     /// <param name="payload">The payload text.</param>
     /// <returns>The parsed bit values.</returns>
@@ -80,7 +80,7 @@ public static class PlcSimulatorProtocol
     }
 
     /// <summary>
-    /// \brief Parses word values from a protocol payload.
+    /// Parses word values from a protocol payload.
     /// </summary>
     /// <param name="payload">The payload text.</param>
     /// <returns>The parsed word values.</returns>
@@ -92,7 +92,7 @@ public static class PlcSimulatorProtocol
     }
 
     /// <summary>
-    /// \brief Extracts the OK payload from a response line.
+    /// Extracts the OK payload from a response line.
     /// </summary>
     /// <param name="line">The response line.</param>
     /// <returns>The response payload.</returns>
